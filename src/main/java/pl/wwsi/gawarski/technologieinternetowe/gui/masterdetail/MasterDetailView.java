@@ -137,13 +137,11 @@ public class MasterDetailView extends Div {
                 textFieldStreet,
                 textFieldPropertyNumber,
                 textFieldLocalNumber,
-                gridBasket
 
         };
 
         Component[] componentsBasket = new Component[]{
                 gridBasket
-
         };
 
         for (Component component : componentsDetails) {

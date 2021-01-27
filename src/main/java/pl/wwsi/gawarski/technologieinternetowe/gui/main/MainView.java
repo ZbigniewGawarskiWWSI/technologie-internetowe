@@ -19,6 +19,7 @@ import com.vaadin.flow.server.PWA;
 import pl.wwsi.gawarski.technologieinternetowe.gui.about.AboutView;
 import pl.wwsi.gawarski.technologieinternetowe.gui.helloworld.HelloWorldView;
 import pl.wwsi.gawarski.technologieinternetowe.gui.masterdetail.MasterDetailView;
+import pl.wwsi.gawarski.technologieinternetowe.gui.order.OrderView;
 
 import java.util.Optional;
 
@@ -76,7 +77,7 @@ public class MainView extends AppLayout {
 
     private static Tab[] getAvailableTabs() {
         return new Tab[]{createTab("Hello World", HelloWorldView.class), createTab("About", AboutView.class),
-                createTab("Master-Detail", MasterDetailView.class)};
+                createTab("Master-Detail", MasterDetailView.class),createTab("Order-View", OrderView.class)};
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {
