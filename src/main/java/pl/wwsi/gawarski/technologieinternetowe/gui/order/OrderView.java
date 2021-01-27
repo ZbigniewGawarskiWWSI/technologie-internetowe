@@ -6,13 +6,21 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +39,13 @@ import java.util.Map;
 public class OrderView extends Div {
 
     private DishService dishService;
+    private Basket basket;
 
     private Tab tabMenu;
     private Div divMenu;
     private Tab tabBasket;
     private Div divBasket;
-    private Tab tabDetails;
-    private Div divDetails;
 
-
-    private Basket basket;
     private Grid<DishDTO> gridMenu = new Grid<>(DishDTO.class, true);
     private Grid<DishDTO> gridBasket = new Grid<>(DishDTO.class, true);
 
@@ -65,27 +70,25 @@ public class OrderView extends Div {
     private Button buttonCancel = new Button("Cancel");
     private Button buttonCreateOrder = new Button("Create Order");
 
-    private Dish dish;
 
     @Autowired
-    public OrderView(DishService dishService) {
+    public OrderView(DishService dishService, Basket basket) {
         this.dishService = dishService;
+        this.basket = new Basket();
 
         createTabs();
 
         Map<Tab, Component> tabsToPages = new HashMap<>();
         tabsToPages.put(tabMenu, divMenu);
         tabsToPages.put(tabBasket, divBasket);
-        tabsToPages.put(tabDetails, divDetails);
-        Tabs tabs = new Tabs(tabMenu, tabBasket, tabDetails);
-        Div pages = new Div(divMenu, divBasket, divDetails);
+        Tabs tabs = new Tabs(tabMenu, tabBasket);
+        Div pages = new Div(divMenu, divBasket);
 
         tabs.addSelectedChangeListener(event -> {
             tabsToPages.values().forEach(page -> page.setVisible(false));
             Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
             selectedPage.setVisible(true);
         });
-
 
         add(tabs, pages);
     }
@@ -94,22 +97,69 @@ public class OrderView extends Div {
     private void createTabMenu() {
         tabMenu = new Tab("Menu");
         divMenu = new Div();
+
+        gridMenu.setItems(dishService.getAllInDto());
+        gridMenu.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        gridMenu.setHeightByRows(true);
+        gridMenu.setSelectionMode(Grid.SelectionMode.NONE);
+        gridMenu.addComponentColumn(dish ->
+        {
+            Button button = new Button("Add");
+            button.addClickListener(click -> {
+                Dialog dialog = new Dialog();
+                IntegerField integerFieldDishNumber = new IntegerField();
+                integerFieldDishNumber.setHasControls(true);
+                integerFieldDishNumber.setMin(0);
+                Button buttonAdd = new Button("Confirm", e -> {
+                    int numbers = integerFieldDishNumber.getValue();
+                    basket.addDishes(dish, numbers);
+                    gridBasket.setItems(basket.getDishes());
+                    dialog.close();
+                });
+                Button buttonCancel = new Button("Cancel", e -> {
+                    dialog.close();
+                });
+                dialog.add(integerFieldDishNumber, buttonAdd, buttonCancel);
+                dialog.open();
+            });
+            return button;
+        });
+        /*
+        gridMenu.addComponentColumn(dish -> {
+            IntegerField numberField = new IntegerField();
+            numberField.setHasControls(true);
+            numberField.setMin(0);
+            return numberField;
+        });
+        gridMenu.addComponentColumn(dish ->
+        {
+            Button button = new Button("Add");
+            button.addClickListener(click -> {
+            });
+            return button;
+        });*/
+        divMenu.add(gridMenu);
     }
 
     private void createTabBasket() {
         tabBasket = new Tab("Basket");
         divBasket = new Div();
         divBasket.setVisible(false);
-        gridBasket.setItems(dishService.getAllInDto());
+        SplitLayout splitLayout = new SplitLayout();
+        splitLayout.setSizeFull();
+        gridBasket.setItems(basket.getDishes());
         gridBasket.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         gridBasket.setHeightByRows(true);
-        divBasket.add(gridBasket);
-    }
-
-    private void createTabDetails() {
-        tabDetails = new Tab("Details");
-        divDetails = new Div();
-        divDetails.setVisible(false);
+        gridBasket.setSelectionMode(Grid.SelectionMode.NONE);
+        gridBasket.addComponentColumn(dish -> {
+            Button button = new Button("Remove");
+            button.addClickListener(click -> {
+                basket.removeDish(dish);
+                gridBasket.setItems(basket.getDishes());
+            });
+            return button;
+        });
+        splitLayout.addToPrimary(gridBasket);
 
         textFieldFirstName = new TextField("First Name");
         textFieldLastName = new TextField("Last Name");
@@ -140,13 +190,17 @@ public class OrderView extends Div {
             ((HasStyle) component).addClassName("full-width");
         }
 
-        divDetails.add(components);
+        splitLayout.addToSecondary(components);
+        divBasket.add(splitLayout);
     }
 
     private void createTabs() {
         createTabBasket();
         createTabMenu();
-        createTabDetails();
+    }
+
+    private void refreshGridBasket() {
+        gridBasket.setItems(basket.getDishes());
     }
 
 }
