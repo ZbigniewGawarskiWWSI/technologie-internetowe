@@ -1,47 +1,58 @@
 package pl.wwsi.gawarski.technologieinternetowe.model.helper;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Getter
 @Repository
 public class Basket {
-    private List<DishDTO> dishes;
+    private List<DishDTO> dishList;
     private double price;
+    private Map<DishDTO, Integer> dishMap;
 
     public Basket() {
-        this.dishes = new ArrayList<>();
+        this.dishList = new ArrayList<>();
+        this.dishMap = new HashMap<>();
         this.price = 0;
     }
 
     private void calculatePrice() {
         this.price = 0;
-        for (DishDTO dish : dishes) {
+        for (DishDTO dish : dishList) {
             price += dish.getPrice();
         }
     }
 
-    public void addDish(DishDTO dishDTO) {
-        dishes.add(dishDTO);
-        calculatePrice();
+    private void addDish(DishDTO dishDTO) {
+        dishList.add(dishDTO);
     }
 
     public void addDishes(DishDTO dishDTO, int number) {
-        for(int i=0;i<number;i++){
-            dishes.add(dishDTO);
+        if (dishMap.containsKey(dishDTO)) {
+            int newNumber = dishMap.get(dishDTO);
+            newNumber += number;
+            dishMap.replace(dishDTO, newNumber);
+        } else {
+            dishMap.put(dishDTO, number);
+        }
+        for (int i = 0; i < number; i++) {
+            addDish(dishDTO);
         }
         calculatePrice();
     }
 
     public void removeDish(DishDTO dishDTO) {
-        dishes.remove(dishDTO);
+        int number = dishMap.get(dishDTO);
+        for (int i = 0; i < number; i++) {
+            dishList.remove(dishDTO);
+        }
         calculatePrice();
     }
 

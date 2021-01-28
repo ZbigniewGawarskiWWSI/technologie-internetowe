@@ -10,23 +10,17 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 import pl.wwsi.gawarski.technologieinternetowe.gui.main.MainView;
-import pl.wwsi.gawarski.technologieinternetowe.model.entity.Dish;
 import pl.wwsi.gawarski.technologieinternetowe.model.helper.Basket;
 import pl.wwsi.gawarski.technologieinternetowe.service.DishService;
 
@@ -111,10 +105,12 @@ public class OrderView extends Div {
                 integerFieldDishNumber.setHasControls(true);
                 integerFieldDishNumber.setMin(0);
                 Button buttonAdd = new Button("Confirm", e -> {
-                    int numbers = integerFieldDishNumber.getValue();
-                    basket.addDishes(dish, numbers);
-                    gridBasket.setItems(basket.getDishes());
-                    dialog.close();
+                    if (integerFieldDishNumber.getValue() != null) {
+                        int numbers = integerFieldDishNumber.getValue();
+                        basket.addDishes(dish, numbers);
+                        gridBasket.setItems(basket.getDishList());
+                        dialog.close();
+                    }
                 });
                 Button buttonCancel = new Button("Cancel", e -> {
                     dialog.close();
@@ -147,7 +143,7 @@ public class OrderView extends Div {
         divBasket.setVisible(false);
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
-        gridBasket.setItems(basket.getDishes());
+        gridBasket.setItems(basket.getDishList());
         gridBasket.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         gridBasket.setHeightByRows(true);
         gridBasket.setSelectionMode(Grid.SelectionMode.NONE);
@@ -155,7 +151,7 @@ public class OrderView extends Div {
             Button button = new Button("Remove");
             button.addClickListener(click -> {
                 basket.removeDish(dish);
-                gridBasket.setItems(basket.getDishes());
+                gridBasket.setItems(basket.getDishList());
             });
             return button;
         });
@@ -200,7 +196,7 @@ public class OrderView extends Div {
     }
 
     private void refreshGridBasket() {
-        gridBasket.setItems(basket.getDishes());
+        gridBasket.setItems(basket.getDishList());
     }
 
 }
