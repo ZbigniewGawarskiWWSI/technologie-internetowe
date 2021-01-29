@@ -32,4 +32,12 @@ public class Address {
 
     @Column(name = "LOCAL_NUMBER")
     private String localNumber;
+
+    public Address(String city, String postCode, String street, String propertyNumber, String localNumber) {
+        this.city = city;
+        this.postCode = postCode;
+        this.street = street;
+        this.propertyNumber = propertyNumber;
+        this.localNumber = localNumber;
+    }
 }

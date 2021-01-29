@@ -5,6 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Dish;
+import pl.wwsi.gawarski.technologieinternetowe.model.entity.DishType;
+import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishRepo;
+import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishTypeRepo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -29,4 +35,23 @@ public class DishDTO {
         dishDTO.setPrice(dish.getPrice());
         return dishDTO;
     }
+
+    public static Dish convertDtoToDish(DishDTO dto, DishTypeRepo repo) {
+        Dish dish = new Dish();
+        dish.setId(dto.getId());
+        dish.setName(dto.getName());
+        dish.setPrice(dto.getPrice());
+        DishType dishType = repo.findByName(dto.getName()).orElse(null);
+        dish.setDishType(dishType);
+        return dish;
+    }
+
+    public static List<Dish> convertDtosToDish(List<DishDTO> dtos, DishTypeRepo repo) {
+        List<Dish> dishes = new ArrayList<>();
+        for (DishDTO dto : dtos) {
+            dishes.add(convertDtoToDish(dto, repo));
+        }
+        return dishes;
+    }
+
 }

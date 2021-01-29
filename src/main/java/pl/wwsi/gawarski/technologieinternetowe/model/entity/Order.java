@@ -3,6 +3,7 @@ package pl.wwsi.gawarski.technologieinternetowe.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.wwsi.gawarski.technologieinternetowe.util.UuidFactory;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +11,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "ORDERS")
 public class Order {
@@ -40,17 +40,12 @@ public class Order {
     @Column(name = "DELIVERY_DATE")
     private LocalDateTime deliveryDate;
 
-    public Order(List<Dish> dishes, String orderNumber, double price, Address address) {
-        this.dishes = dishes;
-        this.orderNumber = orderNumber;
-        this.price = price;
-        this.address = address;
-    }
 
-    public Order(String orderNumber, List<Dish> dishes, Address address, double price, LocalDateTime creationDate, LocalDateTime deliveryDate) {
-        this.orderNumber = orderNumber;
+    public Order(List<Dish> dishes, Address address, Person person, double price, LocalDateTime creationDate, LocalDateTime deliveryDate) {
+        this.orderNumber = UuidFactory.generateUUID();
         this.dishes = dishes;
         this.address = address;
+        this.person = person;
         this.price = price;
         this.creationDate = creationDate;
         this.deliveryDate = deliveryDate;

@@ -29,4 +29,11 @@ public class Person {
 
     @Column(name = "E_MAIL")
     private String eMail;
+
+    public Person(String firstName, String lastName, String phoneNumber, String eMail) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.eMail = eMail;
+    }
 }

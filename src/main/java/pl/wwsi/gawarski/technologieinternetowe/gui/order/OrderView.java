@@ -3,13 +3,13 @@ package pl.wwsi.gawarski.technologieinternetowe.gui.order;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -21,9 +21,15 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 import pl.wwsi.gawarski.technologieinternetowe.gui.main.MainView;
+import pl.wwsi.gawarski.technologieinternetowe.model.entity.Address;
+import pl.wwsi.gawarski.technologieinternetowe.model.entity.Order;
+import pl.wwsi.gawarski.technologieinternetowe.model.entity.Person;
 import pl.wwsi.gawarski.technologieinternetowe.model.helper.Basket;
+import pl.wwsi.gawarski.technologieinternetowe.model.helper.DishDtoWithNumber;
 import pl.wwsi.gawarski.technologieinternetowe.service.DishService;
+import pl.wwsi.gawarski.technologieinternetowe.service.OrderService;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +38,7 @@ import java.util.Map;
 @CssImport("./styles/views/masterdetail/master-detail-view.css")
 public class OrderView extends Div {
 
+    private OrderService orderService;
     private DishService dishService;
     private Basket basket;
 
@@ -41,32 +48,25 @@ public class OrderView extends Div {
     private Div divBasket;
 
     private Grid<DishDTO> gridMenu = new Grid<>(DishDTO.class, true);
-    private Grid<DishDTO> gridBasket = new Grid<>(DishDTO.class, true);
+    private Grid<DishDtoWithNumber> gridBasket = new Grid<>(DishDtoWithNumber.class, true);
 
-    //Person section
+    //Order details section
     private TextField textFieldFirstName;
     private TextField textFieldLastName;
     private EmailField emailFieldEmail;
     private TextField textFieldPhone;
-
-    //Address section
     private TextField textFieldCity;
     private TextField textFieldPostCode;
     private TextField textFieldStreet;
     private TextField textFieldPropertyNumber;
     private TextField textFieldLocalNumber;
-
-    //Order details section
     private DateTimePicker dateTimePickerDeliveryDate;
-    private TextField occupation;
-    private Checkbox important;
 
-    private Button buttonCancel = new Button("Cancel");
-    private Button buttonCreateOrder = new Button("Create Order");
+    private Button buttonCreateOrder;
 
 
     @Autowired
-    public OrderView(DishService dishService, Basket basket) {
+    public OrderView(DishService dishService, OrderService orderService, Basket basket) {
         this.dishService = dishService;
         this.basket = new Basket();
 
@@ -108,7 +108,7 @@ public class OrderView extends Div {
                     if (integerFieldDishNumber.getValue() != null) {
                         int numbers = integerFieldDishNumber.getValue();
                         basket.addDishes(dish, numbers);
-                        gridBasket.setItems(basket.getDishList());
+                        gridBasket.setItems(basket.getDishDistinctList());
                         dialog.close();
                     }
                 });
@@ -120,20 +120,6 @@ public class OrderView extends Div {
             });
             return button;
         });
-        /*
-        gridMenu.addComponentColumn(dish -> {
-            IntegerField numberField = new IntegerField();
-            numberField.setHasControls(true);
-            numberField.setMin(0);
-            return numberField;
-        });
-        gridMenu.addComponentColumn(dish ->
-        {
-            Button button = new Button("Add");
-            button.addClickListener(click -> {
-            });
-            return button;
-        });*/
         divMenu.add(gridMenu);
     }
 
@@ -143,7 +129,7 @@ public class OrderView extends Div {
         divBasket.setVisible(false);
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
-        gridBasket.setItems(basket.getDishList());
+        gridBasket.setItems(basket.getDishDistinctList());
         gridBasket.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         gridBasket.setHeightByRows(true);
         gridBasket.setSelectionMode(Grid.SelectionMode.NONE);
@@ -151,7 +137,7 @@ public class OrderView extends Div {
             Button button = new Button("Remove");
             button.addClickListener(click -> {
                 basket.removeDish(dish);
-                gridBasket.setItems(basket.getDishList());
+                gridBasket.setItems(basket.getDishDistinctList());
             });
             return button;
         });
@@ -190,13 +176,36 @@ public class OrderView extends Div {
         divBasket.add(splitLayout);
     }
 
+    private void createButtonCreateOrder() {
+        this.buttonCreateOrder = new Button("Create Order");
+        buttonCreateOrder.addClickListener(e -> {
+            String firstName = this.textFieldFirstName.getValue();
+            String lastName = this.textFieldLastName.getValue();
+            String email = this.emailFieldEmail.getValue();
+            String phone = this.textFieldPhone.getValue();
+            LocalDateTime deliveryTime = this.dateTimePickerDeliveryDate.getValue();
+            String city = this.textFieldCity.getValue();
+            String postCode = this.textFieldPostCode.getValue();
+            String street = this.textFieldStreet.getValue();
+            String propertyNumber = this.textFieldPropertyNumber.getValue();
+            String localNumber = this.textFieldLocalNumber.getValue();
+
+
+            var dishDtoList = basket.getDishList();
+            double price = basket.getPrice();
+            Person person = new Person(firstName, lastName, phone, email);
+            Address address = new Address(city, postCode, street, propertyNumber, localNumber);
+            orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
+        });
+    }
+
     private void createTabs() {
         createTabBasket();
         createTabMenu();
     }
 
     private void refreshGridBasket() {
-        gridBasket.setItems(basket.getDishList());
+        gridBasket.setItems(basket.getDishDistinctList());
     }
 
 }
