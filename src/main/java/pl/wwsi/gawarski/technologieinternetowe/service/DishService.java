@@ -24,7 +24,7 @@ public class DishService {
 
     public List<Dish> getAll() {
         var dishes = dishRepo.findAll();
-        List<Dish> dishesList = new ArrayList<Dish>();
+        List<Dish> dishesList = new ArrayList<>();
         dishes.forEach(dishesList::add);
         return dishesList;
     }

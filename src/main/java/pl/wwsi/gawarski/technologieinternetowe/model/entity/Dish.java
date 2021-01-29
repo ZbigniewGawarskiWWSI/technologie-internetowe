@@ -1,11 +1,13 @@
 package pl.wwsi.gawarski.technologieinternetowe.model.entity;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 
 @Getter
@@ -19,12 +21,13 @@ public class Dish {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = DishType.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @NotNull
+    @ManyToOne(targetEntity = DishType.class, fetch = FetchType.EAGER)
     private DishType dishType;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", nullable = false)
     private String name;
 
-    @Column(name = "PRICE")
+    @Column(name = "PRICE", nullable = false)
     private double price;
 }

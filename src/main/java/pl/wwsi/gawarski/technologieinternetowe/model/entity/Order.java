@@ -1,11 +1,11 @@
 package pl.wwsi.gawarski.technologieinternetowe.model.entity;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wwsi.gawarski.technologieinternetowe.util.UuidFactory;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,26 +18,29 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "ORDER_NUMBER")
+    @Column(name = "ORDER_NUMBER", nullable = false)
     private String orderNumber;
 
-    @ManyToMany(targetEntity = Dish.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @Column(name = "DISHES")
+    @ManyToMany(targetEntity = Dish.class, fetch = FetchType.LAZY)
+    @Column(name = "DISHES", nullable = false)
     private List<Dish> dishes;
 
-    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @NotNull
+    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Address address;
 
-    @OneToOne(targetEntity = Person.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @NotNull
+    @OneToOne(targetEntity = Person.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Person person;
 
-    @Column(name = "PRICE")
+    @Column(name = "PRICE", nullable = false)
     private double price;
 
-    @Column(name = "CREATION_DATE")
+    @Column(name = "CREATION_DATE", nullable = false)
     private LocalDateTime creationDate;
 
-    @Column(name = "DELIVERY_DATE")
+
+    @Column(name = "DELIVERY_DATE", nullable = false)
     private LocalDateTime deliveryDate;
 
 

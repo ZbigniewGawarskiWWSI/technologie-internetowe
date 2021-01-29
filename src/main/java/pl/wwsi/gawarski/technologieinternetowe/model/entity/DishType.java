@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -16,6 +17,6 @@ public class DishType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true, nullable = false)
     String name;
 }

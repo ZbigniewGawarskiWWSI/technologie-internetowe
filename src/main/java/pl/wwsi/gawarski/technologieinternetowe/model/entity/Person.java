@@ -18,13 +18,13 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
 
-    @Column(name = "LAST_NAME")
+    @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
 
-    @Column(name = "PHONE_NUMBER")
+    @Column(name = "PHONE_NUMBER", nullable = false)
     private String phoneNumber;
 
     @Column(name = "E_MAIL")

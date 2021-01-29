@@ -9,18 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-@Getter
 @Repository
+@Getter
 public class Basket {
     private List<DishDTO> dishList;
     private double price;
     private Map<DishDTO, Integer> dishMap;
-    private List<DishDtoWithNumber> dishDistinctList;
 
     public Basket() {
         this.dishList = new ArrayList<>();
-        this.dishDistinctList = new ArrayList<>();
         this.dishMap = new HashMap<>();
         this.price = 0;
     }
@@ -49,18 +46,6 @@ public class Basket {
         for (int i = 0; i < number; i++) {
             addDish(dishDTO);
         }
-        dishDistinctList.add(new DishDtoWithNumber(dishDTO, newNumber));
-        calculatePrice();
-    }
-
-    public void removeDish(DishDtoWithNumber dishDtoWithNumber) {
-        DishDTO dishDTO = dishDtoWithNumber.getDishDTO();
-        int number = dishDtoWithNumber.getNumber();
-        dishMap.remove(dishDTO);
-        for (int i = 0; i < number; i++) {
-            dishList.remove(dishDTO);
-        }
-        dishDistinctList.remove(dishDtoWithNumber);
         calculatePrice();
     }
 

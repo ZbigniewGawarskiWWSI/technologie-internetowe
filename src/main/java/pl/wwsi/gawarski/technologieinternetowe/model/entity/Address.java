@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -18,16 +19,16 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "CITY")
+    @Column(name = "CITY", nullable = false)
     private String city;
 
-    @Column(name = "POST_CODE")
+    @Column(name = "POST_CODE", nullable = false)
     private String postCode;
 
-    @Column(name = "STREET")
+    @Column(name = "STREET", nullable = false)
     private String street;
 
-    @Column(name = "PROPERTY_NUMBER")
+    @Column(name = "PROPERTY_NUMBER", nullable = false)
     private String propertyNumber;
 
     @Column(name = "LOCAL_NUMBER")

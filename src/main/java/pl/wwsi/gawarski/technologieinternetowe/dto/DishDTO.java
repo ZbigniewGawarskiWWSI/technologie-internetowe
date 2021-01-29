@@ -1,18 +1,14 @@
 package pl.wwsi.gawarski.technologieinternetowe.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Dish;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.DishType;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishRepo;
 import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishTypeRepo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
