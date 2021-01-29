@@ -64,4 +64,13 @@ public class Basket {
         calculatePrice();
     }
 
+    public void removeDish(DishDTO dishDTO) {
+        int number = dishMap.get(dishDTO);
+        dishMap.remove(dishDTO);
+        for (int i = 0; i < number; i++) {
+            dishList.remove(dishDTO);
+        }
+        calculatePrice();
+    }
+
 }
