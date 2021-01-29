@@ -68,6 +68,7 @@ public class OrderView extends Div {
     @Autowired
     public OrderView(DishService dishService, OrderService orderService, Basket basket) {
         this.dishService = dishService;
+        this.orderService = orderService;
         this.basket = new Basket();
 
         createTabs();
@@ -155,6 +156,8 @@ public class OrderView extends Div {
         textFieldPropertyNumber = new TextField("Property Number");
         textFieldLocalNumber = new TextField("Local Number");
 
+        createButtonCreateOrder();
+
         Component[] components = new Component[]{
                 textFieldFirstName,
                 textFieldLastName,
@@ -166,6 +169,7 @@ public class OrderView extends Div {
                 textFieldStreet,
                 textFieldPropertyNumber,
                 textFieldLocalNumber,
+                this.buttonCreateOrder
         };
 
         for (Component component : components) {

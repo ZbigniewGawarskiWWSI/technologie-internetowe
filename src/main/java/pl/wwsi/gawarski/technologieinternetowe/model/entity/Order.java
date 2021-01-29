@@ -21,14 +21,14 @@ public class Order {
     @Column(name = "ORDER_NUMBER")
     private String orderNumber;
 
-    @ManyToMany(targetEntity = Dish.class, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = Dish.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @Column(name = "DISHES")
     private List<Dish> dishes;
 
-    @OneToOne
+    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Address address;
 
-    @OneToOne
+    @OneToOne(targetEntity = Person.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Person person;
 
     @Column(name = "PRICE")

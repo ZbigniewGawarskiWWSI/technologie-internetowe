@@ -9,7 +9,8 @@ import javax.persistence.*;
 
 
 @Getter
-@Setter @NoArgsConstructor
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "DISHES")
@@ -18,7 +19,7 @@ public class Dish {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = DishType.class, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = DishType.class, fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private DishType dishType;
 
     @Column(name = "NAME")
