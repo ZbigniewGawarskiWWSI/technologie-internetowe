@@ -109,7 +109,7 @@ public class OrderView extends Div {
                     if (integerFieldDishNumber.getValue() != null) {
                         int numbers = integerFieldDishNumber.getValue();
                         basket.addDishes(dish, numbers);
-                        gridBasket.setItems(basket.getDishDistinctList());
+                        refreshGridBasket();
                         dialog.close();
                     }
                 });
@@ -130,7 +130,7 @@ public class OrderView extends Div {
         divBasket.setVisible(false);
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
-        gridBasket.setItems(basket.getDishDistinctList());
+        refreshGridBasket();
         gridBasket.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         gridBasket.setHeightByRows(true);
         gridBasket.setSelectionMode(Grid.SelectionMode.NONE);
@@ -200,6 +200,8 @@ public class OrderView extends Div {
             Person person = new Person(firstName, lastName, phone, email);
             Address address = new Address(city, postCode, street, propertyNumber, localNumber);
             orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
+            this.basket = new Basket();
+            refreshGridBasket();
         });
     }
 
@@ -209,7 +211,7 @@ public class OrderView extends Div {
     }
 
     private void refreshGridBasket() {
-        gridBasket.setItems(basket.getDishDistinctList());
+        this.gridBasket.setItems(this.basket.getDishDistinctList());
     }
 
 }

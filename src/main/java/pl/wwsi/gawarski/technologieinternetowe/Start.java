@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Address;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Dish;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Order;
+import pl.wwsi.gawarski.technologieinternetowe.model.entity.Person;
 import pl.wwsi.gawarski.technologieinternetowe.model.repository.AddressRepo;
 import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishRepo;
 import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishTypeRepo;
@@ -43,36 +44,37 @@ public class Start {
             dishService.addDish(dish);
         }
 
-        /*
-        Dish dish = new Dish();
-        dish.setDishType(dishType);
-        dish.setName("POMIDOROWA");
-        dish.setPrice(35.49);
-        dishService.addDish(dish);
-        */
-
-/*
         Address address = new Address();
         address.setCity("Warszawa");
         address.setPostCode("00-025");
         address.setStreet("Lewartowskiego");
         address.setPropertyNumber("54");
         address.setLocalNumber("15");
-        addressRepo.save(address);
-        address = addressRepo.findById(1L).get();
 
-        List<Dish> dishes = new ArrayList<Dish>();
+        //addressRepo.save(address);
+        //address = addressRepo.findById(1L).get();
+
+        Person person = new Person();
+        person.setFirstName("first name");
+        person.setLastName("last name");
+        person.setEMail("test@test.pl");
+        person.setPhoneNumber("123456789");
+
+        List<Dish> dishes = new ArrayList<>();
         dishes.add(dishRepo.findById(1L).get());
+        dishes.add(dishRepo.findById(2L).get());
+        dishes.add(dishRepo.findById(2L).get());
+        dishes.add(dishRepo.findById(4L).get());
 
-        Order order = new Order();
-        order.setCreationDate(LocalDateTime.now());
-        order.setDeliveryDate(LocalDateTime.now());
-        order.setAddress(address);
-        order.setOrderNumber(UuidFactory.generateUUID());
-        order.setPrice(75.54);
-        order.setDishes(dishes);
+        Order order = new Order(dishes, address, person, 15.45, LocalDateTime.now(), LocalDateTime.now());
+        //order.setCreationDate(LocalDateTime.now());
+        //order.setDeliveryDate(LocalDateTime.now());
+        //order.setAddress(address);
+        //order.setOrderNumber(UuidFactory.generateUUID());
+        //order.setPrice(75.54);
+        //order.setDishes(dishes);
 
-        orderRepo.save(order);*/
+        orderRepo.save(order);
     }
 
 }

@@ -25,10 +25,10 @@ public class Order {
     @Column(name = "DISHES")
     private List<Dish> dishes;
 
-    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(targetEntity = Address.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Address address;
 
-    @OneToOne(targetEntity = Person.class, fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(targetEntity = Person.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Person person;
 
     @Column(name = "PRICE")
