@@ -28,9 +28,9 @@ public class OrderService {
         this.personRepo = personRepo;
     }
 
-    public void createOrder(List<DishDTO> dishDTOList, double price, Person person, Address address, LocalDateTime creationTime, LocalDateTime deliveryTime) {
+    public String createOrder(List<DishDTO> dishDTOList, double price, Person person, Address address, LocalDateTime creationTime, LocalDateTime deliveryTime) {
         var dishes = DishDTO.convertDtosToDish(dishDTOList, dishTypeRepo);
         Order order = new Order(dishes, address, person, price, creationTime, deliveryTime);
-        orderRepo.save(order);
+        return orderRepo.save(order).getOrderNumber();
     }
 }

@@ -234,10 +234,10 @@ public class OrderView extends Div {
                 Person person = new Person(firstName, lastName, phone, email);
                 Address address = new Address(city, postCode, street, propertyNumber, localNumber);
                 try {
-                    orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
+                    String orderNumber = orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
                     this.basket = new Basket();
                     refreshGridBasket();
-                    showOrderCreatedNotification();
+                    showOrderCreatedNotification(orderNumber);
                 } catch (Exception exception) {
                     exception.printStackTrace();
                     showOrderNotCreatedNotification();
@@ -278,11 +278,11 @@ public class OrderView extends Div {
         return isNotBlank;
     }
 
-    private static void showOrderCreatedNotification() {
+    private static void showOrderCreatedNotification(String orderNumber) {
         Notification notification = new Notification();
         notification.setDuration(5000);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        notification.setText("the order has been created");
+        notification.setText("the order " + orderNumber + " has been created");
         notification.open();
     }
 
