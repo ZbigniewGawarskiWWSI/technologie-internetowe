@@ -7,7 +7,6 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -17,8 +16,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import pl.wwsi.gawarski.technologieinternetowe.gui.about.AboutView;
-import pl.wwsi.gawarski.technologieinternetowe.gui.helloworld.HelloWorldView;
-import pl.wwsi.gawarski.technologieinternetowe.gui.masterdetail.MasterDetailView;
 import pl.wwsi.gawarski.technologieinternetowe.gui.order.OrderView;
 
 import java.util.Optional;
@@ -58,12 +55,9 @@ public class MainView extends AppLayout {
         header.setWidthFull();
         header.setAlignItems(FlexComponent.Alignment.CENTER);
         header.setId("header");
-        Image logo = new Image("images/logo.png", "Gawarski WWSI Catering logo");
-        logo.setId("logo");
-        header.add(logo);
         Avatar avatar = new Avatar();
         avatar.setId("avatar");
-        header.add(new H1("Gawarski WWSI Catering"));
+        header.add(new H1("Grupa Z702 Zbigniew Gawarski"));
         header.add(avatar);
         return header;
     }
@@ -76,8 +70,7 @@ public class MainView extends AppLayout {
     }
 
     private static Tab[] getAvailableTabs() {
-        return new Tab[]{createTab("Hello World", HelloWorldView.class), createTab("About", AboutView.class),
-                createTab("Master-Detail", MasterDetailView.class),createTab("Order-View", OrderView.class)};
+        return new Tab[]{createTab("About", AboutView.class), createTab("Order-View", OrderView.class)};
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {

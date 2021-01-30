@@ -7,10 +7,7 @@ import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Address;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Order;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.Person;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.AddressRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishTypeRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.OrderRepo;
+import pl.wwsi.gawarski.technologieinternetowe.model.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,12 +16,16 @@ import java.util.List;
 @Service
 public class OrderService {
     private OrderRepo orderRepo;
-    DishTypeRepo dishTypeRepo;
+    private DishTypeRepo dishTypeRepo;
+    private AddressRepo addressRepo;
+    private PersonRepo personRepo;
 
     @Autowired
-    public OrderService(OrderRepo orderRepo, DishRepo dishRepo, AddressRepo addressRepo, DishTypeRepo dishTypeRepo) {
+    public OrderService(OrderRepo orderRepo, DishTypeRepo dishTypeRepo, AddressRepo addressRepo, PersonRepo personRepo) {
         this.orderRepo = orderRepo;
         this.dishTypeRepo = dishTypeRepo;
+        this.addressRepo = addressRepo;
+        this.personRepo = personRepo;
     }
 
     public void createOrder(List<DishDTO> dishDTOList, double price, Person person, Address address, LocalDateTime creationTime, LocalDateTime deliveryTime) {

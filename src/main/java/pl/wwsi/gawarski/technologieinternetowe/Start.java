@@ -1,11 +1,9 @@
 package pl.wwsi.gawarski.technologieinternetowe;
 
 import org.springframework.context.annotation.Configuration;
+import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 import pl.wwsi.gawarski.technologieinternetowe.model.entity.*;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.AddressRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.DishTypeRepo;
-import pl.wwsi.gawarski.technologieinternetowe.model.repository.OrderRepo;
+import pl.wwsi.gawarski.technologieinternetowe.model.repository.*;
 import pl.wwsi.gawarski.technologieinternetowe.service.DishService;
 import pl.wwsi.gawarski.technologieinternetowe.service.OrderService;
 import pl.wwsi.gawarski.technologieinternetowe.util.UuidFactory;
@@ -13,6 +11,8 @@ import pl.wwsi.gawarski.technologieinternetowe.util.UuidFactory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO.convertDishToDto;
 
 @Configuration
 public class Start {
@@ -22,26 +22,19 @@ public class Start {
     private DishRepo dishRepo;
     private AddressRepo addressRepo;
     private OrderRepo orderRepo;
+    private PersonRepo personRepo;
 
-    public Start(DishService dishService, OrderService orderService, DishTypeRepo dishTypeRepo, DishRepo dishRepo, AddressRepo addressRepo, OrderRepo orderRepo) {
+    public Start(DishService dishService, OrderService orderService, DishTypeRepo dishTypeRepo, DishRepo dishRepo, AddressRepo addressRepo, OrderRepo orderRepo, PersonRepo personRepo) {
         this.dishService = dishService;
         this.orderService = orderService;
         this.dishTypeRepo = dishTypeRepo;
         this.dishRepo = dishRepo;
         this.addressRepo = addressRepo;
         this.orderRepo = orderRepo;
-/*
-        dishService.addDishType("Zupa");
-        var dishType = dishTypeRepo.findById(1L).orElseThrow(() -> new RuntimeException("nie dziala"));
-        for (int i = 0; i < 10; i++) {
-            Dish dish = new Dish();
-            dish.setDishType(dishType);
-            dish.setName("POMIDOROWA" + i);
-            dish.setPrice((double) i * 35.49 + 1);
-            dishService.addDish(dish);
-        }*/
+        this.personRepo = personRepo;
+
         DishType dishType = new DishType();
-        dishType.setName("MIĘSO");
+        dishType.setName("MIESO");
         dishTypeRepo.save(dishType);
 
         Dish dish = new Dish();
@@ -68,7 +61,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Rosół");
+        dish.setName("Rosoł");
         dish.setPrice(7);
         dishService.addDish(dish);
 
@@ -80,7 +73,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Żurek");
+        dish.setName("Zurek");
         dish.setPrice(13);
         dishService.addDish(dish);
 
@@ -118,7 +111,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Sok pomarańczowy");
+        dish.setName("Sok Mandarynkowy");
         dish.setPrice(6);
         dishService.addDish(dish);
 
@@ -134,7 +127,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Ryż");
+        dish.setName("Ryz");
         dish.setPrice(8);
         dishService.addDish(dish);
 
@@ -156,7 +149,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Łupacz");
+        dish.setName("Dorsz");
         dish.setPrice(40);
         dishService.addDish(dish);
 
@@ -168,7 +161,7 @@ public class Start {
 
         dish = new Dish();
         dish.setDishType(dishType);
-        dish.setName("Pstrąg");
+        dish.setName("Pstrag");
         dish.setPrice(25);
         dishService.addDish(dish);
 
@@ -185,25 +178,15 @@ public class Start {
         person.setEMail("test@test.pl");
         person.setPhoneNumber("123456789");
 
-        List<Dish> dishes = new ArrayList<>();
-        dishes.add(dishRepo.findById(1L).get());
-        dishes.add(dishRepo.findById(2L).get());
-        dishes.add(dishRepo.findById(2L).get());
-        dishes.add(dishRepo.findById(4L).get());
-        dishes.add(dishRepo.findById(5L).get());
-        dishes.add(dishRepo.findById(6L).get());
-        dishes.add(dishRepo.findById(5L).get());
-        dishes.add(dishRepo.findById(7L).get());
+        List<DishDTO> dishesdto = new ArrayList<>();
+        var dishtemp = dishRepo.findById(1L).get();
+        dishesdto.add(convertDishToDto(dishtemp));
+        dishtemp = dishRepo.findById(1L).get();
+        dishesdto.add(convertDishToDto(dishtemp));
+        dishtemp = dishRepo.findById(2L).get();
+        dishesdto.add(convertDishToDto(dishtemp));
 
-        Order order = new Order(dishes, address, person, 15.45, LocalDateTime.now(), LocalDateTime.now());
-        orderRepo.save(order);
-
-        var temp = new DishType();
-        var temp2 = new DishType();
-        temp.setName("TEST");
-
-        dishTypeRepo.save(temp);
-        dishTypeRepo.save(temp2);
+        orderService.createOrder(dishesdto, 15.4, person, address, LocalDateTime.now(), LocalDateTime.now());
     }
 
 }

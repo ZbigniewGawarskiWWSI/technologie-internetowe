@@ -11,6 +11,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -20,6 +22,7 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.wwsi.gawarski.technologieinternetowe.dto.DishDTO;
 import pl.wwsi.gawarski.technologieinternetowe.gui.main.MainView;
@@ -29,6 +32,7 @@ import pl.wwsi.gawarski.technologieinternetowe.model.helper.Basket;
 import pl.wwsi.gawarski.technologieinternetowe.service.DishService;
 import pl.wwsi.gawarski.technologieinternetowe.service.OrderService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +45,6 @@ public class OrderView extends Div {
     private OrderService orderService;
     private DishService dishService;
     private Basket basket;
-
 
     private Tab tabMenu;
     private Div divMenu;
@@ -118,9 +121,7 @@ public class OrderView extends Div {
                         dialog.close();
                     }
                 });
-                Button buttonCancel = new Button("Cancel", e -> {
-                    dialog.close();
-                });
+                Button buttonCancel = new Button("Cancel", e -> dialog.close());
                 dialog.add(integerFieldDishNumber, buttonConfirm, buttonCancel);
                 dialog.open();
             });
@@ -170,6 +171,8 @@ public class OrderView extends Div {
         emailFieldEmail = new EmailField("Email");
         textFieldPhone = new TextField("Phone");
         dateTimePickerDeliveryDate = new DateTimePicker("Delivery Time");
+        dateTimePickerDeliveryDate.setMin(LocalDateTime.now().plusHours(1L));
+        dateTimePickerDeliveryDate.setStep(Duration.ofMinutes(15L));
 
         textFieldCity = new TextField("City");
         textFieldPostCode = new TextField("Post Code");
@@ -215,13 +218,31 @@ public class OrderView extends Div {
             String street = this.textFieldStreet.getValue();
             String propertyNumber = this.textFieldPropertyNumber.getValue();
             String localNumber = this.textFieldLocalNumber.getValue();
-            var dishDtoList = basket.getDishList();
-            double price = basket.getPrice();
-            Person person = new Person(firstName, lastName, phone, email);
-            Address address = new Address(city, postCode, street, propertyNumber, localNumber);
-            orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
-            this.basket = new Basket();
-            refreshGridBasket();
+
+            Map<String, String> mandatoryFieldsMap = new HashMap<>();
+            mandatoryFieldsMap.put(this.textFieldFirstName.getLabel(), firstName);
+            mandatoryFieldsMap.put(this.textFieldLastName.getLabel(), lastName);
+            mandatoryFieldsMap.put(this.textFieldPhone.getLabel(), phone);
+            mandatoryFieldsMap.put(this.textFieldCity.getLabel(), city);
+            mandatoryFieldsMap.put(this.textFieldPostCode.getLabel(), postCode);
+            mandatoryFieldsMap.put(this.textFieldStreet.getLabel(), street);
+            mandatoryFieldsMap.put(this.textFieldPropertyNumber.getLabel(), propertyNumber);
+
+            if (checkIfMandatoryFieldsAreNotBlank(mandatoryFieldsMap)) {
+                var dishDtoList = basket.getDishList();
+                double price = basket.getPrice();
+                Person person = new Person(firstName, lastName, phone, email);
+                Address address = new Address(city, postCode, street, propertyNumber, localNumber);
+                try {
+                    orderService.createOrder(dishDtoList, price, person, address, LocalDateTime.now(), deliveryTime);
+                    this.basket = new Basket();
+                    refreshGridBasket();
+                    showOrderCreatedNotification();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    showOrderNotCreatedNotification();
+                }
+            }
         });
 
         this.layoutButton = new HorizontalLayout();
@@ -240,10 +261,45 @@ public class OrderView extends Div {
         try {
             this.gridBasket.setItems(this.basket.getDishMap().keySet());
             this.labelTotalPrice.setText("" + this.basket.getPrice());
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
+    }
 
+    private boolean checkIfMandatoryFieldsAreNotBlank(Map<String, String> map) {
+        boolean isNotBlank = true;
+        var keys = map.keySet();
+        for (var key : keys) {
+            String value = map.get(key);
+            if (StringUtil.isBlank(value)) {
+                showMandatoryFieldsNotification(key);
+                isNotBlank = false;
+            }
+        }
+        return isNotBlank;
+    }
+
+    private static void showOrderCreatedNotification() {
+        Notification notification = new Notification();
+        notification.setDuration(5000);
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.setText("the order has been created");
+        notification.open();
+    }
+
+    private static void showOrderNotCreatedNotification() {
+        Notification notification = new Notification();
+        notification.setDuration(5000);
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.setText("the order has not been created");
+        notification.open();
+    }
+
+    private static void showMandatoryFieldsNotification(String fieldName) {
+        Notification notification = new Notification();
+        notification.setDuration(5000);
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.setText(fieldName + " can not be empty");
+        notification.open();
     }
 
 

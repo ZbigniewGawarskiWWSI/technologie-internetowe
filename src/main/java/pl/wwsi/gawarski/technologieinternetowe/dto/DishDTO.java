@@ -37,7 +37,7 @@ public class DishDTO {
         dish.setId(dto.getId());
         dish.setName(dto.getName());
         dish.setPrice(dto.getPrice());
-        DishType dishType = repo.findByName(dto.getName()).orElse(null);
+        DishType dishType = repo.findByName(dto.getType()).get();
         dish.setDishType(dishType);
         return dish;
     }
